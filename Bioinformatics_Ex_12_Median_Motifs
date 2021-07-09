@@ -1,0 +1,46 @@
+k = 6
+Dna = ['TGTAAGCGCACGCTCTCTTTCCGCCGATATCGCCTGACGCAC',
+'CCCCTGTCACAATTATGTAGATTTCGTCGGATATCAACATCA',
+'CAAAGCTCTCTCTTCATGCTCCTGAACGTCTGCCGAATGCCG',
+'TGATTACTCCTGGGGCTTGTGAGCTAATACCCTGTCCTTATT',
+'ATATGCGTCCGTCCAGAGCCCCTGATAACCACCTGTCATTAT',
+'TGTAAGGTCTTGTTATGGTGTGATCCGTAGCGCCTGAAAGCG',
+'AAGAAATAGCAGCTCCTGCCATTCACAGGAGTGCGCGGAGTC',
+'CTGCTAGCTCACCATACGTTCATCCGTAGTCGCCTGCATGCC',
+'TAAATATATCAACCCCTGGTCCCATTGAGCTCTCGGAGTGAG',
+'TTCACACTCCTGTAATACGTACCAAAGCCGAAAGCCATGCAA']
+def HammingDistance(p, q):
+    count = 0
+    if len(p) == len(q):
+        for i in range(len(p)):
+            if p[i] != q[i]:
+                count += 1
+    return count
+def MedianString(Dna, k):
+    kmerList = []
+    kmerAll = set()
+    # create all possible kmers in all strings and store in a list of set
+    for i in range(len(Dna)):
+        kmerbyString = set()
+        for j in range(len(Dna[i]) - k + 1):
+            pattern = Dna[i][j:j + k]
+            kmerbyString.add(pattern)
+            kmerAll.add(pattern)
+        kmerList.append(kmerbyString)
+    # for all possible kmers, calculate HammingDistance to the kmers in the set (ie. string). The localdistance is the shortest distance
+    # of that kmer in the string. Distance=sum of all localdistance in every string. The medianstring is the kmer with the smallest distance 
+    # dict [kmer, distance]
+    median = dict()
+    for m in kmerAll:
+        distance = 0
+        for n in kmerList:
+            localDistance = 1000000
+            for item in n:
+                if (localDistance > HammingDistance(m, item)):
+                    localDistance = HammingDistance(m, item)
+            distance = distance + localDistance
+        d = {m: distance}
+        median.update(d)
+    m = min(median.values())
+    return [t for t, v in median.items() if v == m]
+print(MedianString(Dna, k))
